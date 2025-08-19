@@ -160,4 +160,26 @@ public class PlayerData {
         this.farmingHarvests.clear();
         this.rankupNotificationSent = false;
     }
+    
+    // Individual reset methods for selective statistics reset
+    public void resetMobKills() {
+        this.mobKills.clear();
+    }
+    
+    public void resetBlockBreaks() {
+        this.blockBreaks.clear();
+    }
+    
+    public void resetFishing() {
+        this.fishingCatches.clear();
+    }
+    
+    public void resetFarming() {
+        this.farmingHarvests.clear();
+    }
+    
+    public void resetPlaytime() {
+        this.totalPlaytime = 0;
+        this.joinTime = System.currentTimeMillis();
+    }
 } 

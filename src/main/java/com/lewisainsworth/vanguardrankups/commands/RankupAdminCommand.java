@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import java.util.Map;
 
 public class RankupAdminCommand implements CommandExecutor {
     
@@ -50,6 +51,11 @@ public class RankupAdminCommand implements CommandExecutor {
                 handlePlayerInfo(sender, args);
                 break;
                 
+            case "requirements":
+            case "req":
+                handleRequirements(sender, args);
+                break;
+                
             case "help":
                 showHelp(sender);
                 break;
@@ -71,6 +77,8 @@ public class RankupAdminCommand implements CommandExecutor {
         sender.sendMessage("§7/rankupadmin reset <jugador> §8- §fResetear progreso de un jugador");
         sender.sendMessage("§7/rankupadmin setrank <jugador> <rango> §8- §fEstablecer rango de un jugador");
         sender.sendMessage("§7/rankupadmin info <jugador> §8- §fVer información de un jugador");
+        sender.sendMessage("§7/rankupadmin requirements <rango> §8- §fVer requisitos de un rango");
+        sender.sendMessage("§7/rankupadmin requirements <rango> <tipo> <objetivo> <valor> §8- §fCambiar requisito");
         sender.sendMessage("§7/rankupadmin help §8- §fMostrar esta ayuda");
         sender.sendMessage("§8§m" + "─".repeat(20));
     }
@@ -229,5 +237,137 @@ public class RankupAdminCommand implements CommandExecutor {
         }
         
         sender.sendMessage("§8§m" + "─".repeat(40));
+    }
+    
+    private void handleRequirements(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            plugin.getMessageUtils().sendMessage(sender, "§cUso: /rankupadmin requirements <rango>");
+            plugin.getMessageUtils().sendMessage(sender, "§cO para cambiar: /rankupadmin requirements <rango> <tipo> <objetivo> <valor>");
+            return;
+        }
+        
+        // Parse rank level
+        int rankLevel;
+        try {
+            rankLevel = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            plugin.getMessageUtils().sendMessage(sender, "§cEl rango debe ser un número válido");
+            return;
+        }
+        
+        if (rankLevel < 1 || rankLevel > plugin.getConfigManager().getMaxRank()) {
+            plugin.getMessageUtils().sendMessage(sender, "§cEl rango debe estar entre 1 y " + plugin.getConfigManager().getMaxRank());
+            return;
+        }
+        
+        // If only rank specified, show current requirements
+        if (args.length == 2) {
+            showRankRequirements(sender, rankLevel);
+            return;
+        }
+        
+        // If 5 args, update requirement
+        if (args.length == 5) {
+            updateRequirement(sender, rankLevel, args);
+            return;
+        }
+        
+        plugin.getMessageUtils().sendMessage(sender, "§cUso: /rankupadmin requirements <rango>");
+        plugin.getMessageUtils().sendMessage(sender, "§cO para cambiar: /rankupadmin requirements <rango> <tipo> <objetivo> <valor>");
+    }
+    
+    private void showRankRequirements(CommandSender sender, int rankLevel) {
+        var requirements = plugin.getRankupManager().getRankRequirements(rankLevel);
+        if (requirements == null) {
+            plugin.getMessageUtils().sendMessage(sender, "§cNo se encontraron requisitos para el rango " + rankLevel);
+            return;
+        }
+        
+        sender.sendMessage("§8§m" + "─".repeat(30));
+        sender.sendMessage("§b§lRequisitos del Rango " + rankLevel);
+        sender.sendMessage("§8§m" + "─".repeat(30));
+        
+        // Mob kills
+        if (requirements.containsKey("mob_kills")) {
+            @SuppressWarnings("unchecked")
+            var mobKills = (Map<String, Integer>) requirements.get("mob_kills");
+            sender.sendMessage("§c§lMobs Eliminados:");
+            for (var entry : mobKills.entrySet()) {
+                sender.sendMessage("§7  " + entry.getKey() + ": §f" + entry.getValue());
+            }
+        }
+        
+        // Block breaks
+        if (requirements.containsKey("block_breaks")) {
+            @SuppressWarnings("unchecked")
+            var blockBreaks = (Map<String, Integer>) requirements.get("block_breaks");
+            sender.sendMessage("§6§lBloques Minados:");
+            for (var entry : blockBreaks.entrySet()) {
+                sender.sendMessage("§7  " + entry.getKey() + ": §f" + entry.getValue());
+            }
+        }
+        
+        // Playtime
+        if (requirements.containsKey("playtime_minutes")) {
+            @SuppressWarnings("unchecked")
+            var playtime = (Map<String, Integer>) requirements.get("playtime_minutes");
+            int total = playtime.getOrDefault("total", 0);
+            sender.sendMessage("§e§lTiempo Jugado: §f" + total + " minutos");
+        }
+        
+        // Fishing
+        if (requirements.containsKey("fishing")) {
+            @SuppressWarnings("unchecked")
+            var fishing = (Map<String, Integer>) requirements.get("fishing");
+            sender.sendMessage("§b§lPesca:");
+            for (var entry : fishing.entrySet()) {
+                sender.sendMessage("§7  " + entry.getKey() + ": §f" + entry.getValue());
+            }
+        }
+        
+        // Farming
+        if (requirements.containsKey("farming")) {
+            @SuppressWarnings("unchecked")
+            var farming = (Map<String, Integer>) requirements.get("farming");
+            sender.sendMessage("§a§lAgricultura:");
+            for (var entry : farming.entrySet()) {
+                sender.sendMessage("§7  " + entry.getKey() + ": §f" + entry.getValue());
+            }
+        }
+        
+        sender.sendMessage("§8§m" + "─".repeat(30));
+    }
+    
+    private void updateRequirement(CommandSender sender, int rankLevel, String[] args) {
+        String requirementType = args[2].toLowerCase();
+        String target = args[3];
+        int newValue;
+        
+        try {
+            newValue = Integer.parseInt(args[4]);
+            if (newValue < 0) {
+                plugin.getMessageUtils().sendMessage(sender, "§cEl valor debe ser mayor o igual a 0");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            plugin.getMessageUtils().sendMessage(sender, "§cEl valor debe ser un número válido");
+            return;
+        }
+        
+        boolean success = plugin.getRankupManager().updateRankRequirements(rankLevel, requirementType, target, newValue);
+        
+        if (success) {
+            plugin.getMessageUtils().sendMessage(sender, "§a✅ Requisito actualizado exitosamente!");
+            plugin.getMessageUtils().sendMessage(sender, "§7Rango: §f" + rankLevel);
+            plugin.getMessageUtils().sendMessage(sender, "§7Tipo: §f" + requirementType);
+            plugin.getMessageUtils().sendMessage(sender, "§7Objetivo: §f" + target);
+            plugin.getMessageUtils().sendMessage(sender, "§7Nuevo valor: §f" + newValue);
+            
+            // Show updated requirements
+            showRankRequirements(sender, rankLevel);
+        } else {
+            plugin.getMessageUtils().sendMessage(sender, "§c❌ Error al actualizar el requisito");
+            plugin.getMessageUtils().sendMessage(sender, "§7Tipos válidos: mob_kills, block_breaks, playtime_minutes, fishing, farming");
+        }
     }
 } 

@@ -24,6 +24,12 @@ settings:
     enabled: true
     remove_previous_group: true
     respect_luckperms_prefix: true
+  reset_statistics:
+    mob_kills: true      # Reset mob kills after rankup
+    block_breaks: true   # Reset block breaks after rankup
+    playtime: false      # Reset playtime after rankup (usually not recommended)
+    fishing: true        # Reset fishing after rankup
+    farming: true        # Reset farming after rankup
 
 # Configuración de Mensajes
 messages:
@@ -38,11 +44,16 @@ messages:
   rank_set: "&aRango de %player% establecido a %rank%."
   
   # Mensajes de progreso - Traducciones firmes
-  progress_mob_kills: "&cMobs eliminados: %current%/%required%"
-  progress_block_breaks: "&6Bloques minados: %current%/%required%"
-  progress_playtime: "&eTiempo jugado: %current%/%required% minutos"
-  progress_fishing: "&bPescas: %current%/%required%"
-  progress_farming: "&aCultivos: %current%/%required%"
+  # progress_mob_kills: "&cMobs eliminados: %current%/%required%"
+  # progress_block_breaks: "&6Bloques minados: %current%/%required%"
+  # progress_playtime: "&eTiempo jugado: %current%/%required% minutos"
+  # progress_fishing: "&bPescas: %current%/%required%"
+  # progress_farming: "&aCultivos: %current%/%required%"
+  progress_mob_kills: ""
+  progress_block_breaks: ""
+  progress_playtime: ""
+  progress_fishing: ""
+  progress_farming: ""
   
   # Mensajes de GUI
   gui_title: "&8VanguardRankUps - %player%"
@@ -60,9 +71,9 @@ sounds:
 gui:
   title: "&8VanguardRankUps - %player%"
   progress_bar:
-    filled: "&a█"
-    empty: "&7█"
-    length: 20
+    filled: "&a|"
+    empty: "&7|"
+    length: 50
     show_percentage: true
     show_numbers: true
   colors:
@@ -73,7 +84,7 @@ gui:
     separator: "&8&m"
   layout:
     show_progress_bars: true
-    show_detailed_stats: true
+    show_detailed_stats: false
     show_rank_info: true
     show_next_rank_preview: true
 
@@ -87,7 +98,7 @@ Aexample:
   rank: 'default'
   # nombre del grupo que el jugador obtendra
   next: 'plebeyo-i'
-  display-name: 'X'
+  display-name: 'Plebeyo I'
   # Lista de requisitos para poder subir al siguiente rango
   # https://okx.sh/rankup/List-of-Requirements.html
   requirements:
@@ -102,26 +113,14 @@ Aexample:
     - 'playsound ui.toast.challenge_complete player %player_name% ~ ~ ~'
     - 'particle firework ~ ~1 ~ 1 1 1 0 50 normal'
     - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
-#Aqui te dejo un ejemplo para que pongas lo que ocupan por rango.
-#qlo si crees que voy a buscar y modificar placeholder por cada tipo de requisitos .|.
-  rankup:
-    requirements-not-met: |-
-      &4&m+                                       +
-      &cNecesitas
-      &c- &d&lTiempo Jugado &c&l- &b[%progress_bar_{statistic_minutes_played}_c:&d|_p:&d|_r:&3|_l:20_m:20_fullbar:&a&lCompletado!%&b]
-      &c- &d&lPiedra Minada &c&l- &b[%progress_bar_{statistic_mine_block:stone}_c:&d|_p:&d|_r:&3|_l:20_m:100_fullbar:&a&lCompletado!%&b]
-      &c- &d&lZombies Asesinados &c&l- &b[%progress_bar_{statistic_kill_entity:Zombie}_c:&d|_p:&d|_r:&3|_l:20_m:10_fullbar:&a&lCompletado!%&b]
-      &cPara subir de &7&l%rankup_current_rank%&r&c a &e&l%rankup_next_rank%&r&c!
-      &cMas informacion en: &awiki.vanguardmc.org
-      &4&m+                                       +
 Bexample:
   rank: 'plebeyo-i'
   next: 'plebeyo-ii'
-  display-name: 'Plebeyo I'  
+  display-name: 'Plebeyo II'
   requirements:
     - 'playtime-minutes 60'
     - 'block-break STONE 200'
-    - 'mob-kills Zombie 20'
+    - 'mob-kills Zombies 20'
   commands:
     - 'eco give %player_name% 4000'
     - 'give %player_name% golden_apple 32'
@@ -135,7 +134,7 @@ Bexample:
 Cexample:
   rank: 'plebeyo-ii'
   next: 'plebeyo-iii'
-  display-name: 'Plebeyo II'
+  display-name: 'Plebeyo III'
   requirements:
     - 'playtime-minutes 120'
     - 'block-break STONE 300'
@@ -152,7 +151,7 @@ Cexample:
 Dexample:
   rank: 'plebeyo-iii'
   next: 'plebeyo-iv'
-  display-name: 'Plebeyo III'
+  display-name: 'Plebeyo IV'
   requirements:
     - 'playtime-minutes 1440'
     - 'block-break STONE 1000'
@@ -169,7 +168,7 @@ Dexample:
 Eexample:
   rank: 'plebeyo-iv'
   next: 'plebeyo-v'
-  display-name: 'Plebeyo IV'
+  display-name: 'Plebeyo V'
   requirements:
     - 'playtime-minutes 2880'
     - 'block-break STONE 5000'
@@ -190,7 +189,7 @@ Eexample:
 Fexample:
   rank: 'plebeyo-v'
   next: 'legionario-i'
-  display-name: 'Plebeyo V'
+  display-name: 'Legionario I'
   requirements:
     - 'playtime-minutes 6000'
     - 'block-break IRON_ORE 500'
@@ -210,7 +209,7 @@ Fexample:
 Gexample:
   rank: 'legionario-i'
   next: 'legionario-ii'
-  display-name: 'Legionario I'
+  display-name: 'Legionario II'
   requirements:
     - 'playtime-minutes 7000'
     - 'block-break DEEPSLATE_DIAMOND_ORE 250'
@@ -227,7 +226,7 @@ Gexample:
 Hexample:
   rank: 'legionario-ii'
   next: 'legionario-iii'
-  display-name: 'Legionario II'
+  display-name: 'Legionario III'
   requirements:
     - 'playtime-minutes 8000'
     - 'block-break DEEPSLATE_DIAMOND_ORE 500'
@@ -245,7 +244,7 @@ Hexample:
 Iexample:
   rank: 'legionario-iii'
   next: 'legionario-iv'
-  display-name: 'Legionario III'
+  display-name: 'Legionario IV'
   requirements:
     - 'playtime-minutes 18720'
     - 'block-break EMERALD_ORE 250'
@@ -262,7 +261,7 @@ Iexample:
 Jexample:
   rank: 'legionario-iv'
   next: 'legionario-v'
-  display-name: 'Legionario IV'
+  display-name: 'Legionario V'
   requirements:
     - 'playtime-minutes 21600'
     - 'block-break EMERALD_ORE 500'
@@ -282,7 +281,7 @@ Jexample:
 Kexample:
   rank: 'legionario-v'
   next: 'tribuno-i'
-  display-name: 'Legionario V'
+  display-name: 'Tribuno I'
   requirements:
     - 'playtime-minutes 28800'
     - 'block-break EMERALD_ORE 800'
@@ -301,7 +300,7 @@ Kexample:
 Lexample:
   rank: 'tribuno-i'
   next: 'tribuno-ii'
-  display-name: 'Tribuno I'
+  display-name: 'Tribuno II'
   requirements:
     - 'playtime-minutes 33120'
     - 'block-break STONE 7500'
@@ -319,7 +318,7 @@ Lexample:
 Mexample:
   rank: 'tribuno-ii'
   next: 'tribuno-iii'
-  display-name: 'Tribuno II'
+  display-name: 'Tribuno III'
   requirements:
     - 'playtime-minutes 37440'
     - 'block-break OAK_LOG 4000'
@@ -338,7 +337,7 @@ Mexample:
 Nexample:
   rank: 'tribuno-iii'
   next: 'tribuno-iv'
-  display-name: 'Tribuno III'
+  display-name: 'Tribuno IV'
   requirements:
     - 'playtime-minutes 43200'
     - 'block-break DEEPSLATE_DIAMOND_ORE 1100'
@@ -357,7 +356,7 @@ Nexample:
 Oexample:
   rank: 'tribuno-iv'
   next: 'tribuno-v'
-  display-name: 'Tribuno IV'
+  display-name: 'Tribuno V'
   requirements:
     - 'playtime-minutes 47520'
     - 'block-break EMERALD_ORE 1000'
@@ -376,7 +375,7 @@ Oexample:
 Pexample:
   rank: 'tribuno-v'
   next: 'consul-i'
-  display-name: 'Tribuno V'
+  display-name: 'Consul I'
   requirements:
     - 'playtime-minutes 50400'
     - 'block-break OAK_LOG 6000'
@@ -394,7 +393,7 @@ Pexample:
 Qexample:
   rank: 'consul-i'
   next: 'consul-ii'
-  display-name: 'Consul I'
+  display-name: 'Consul II'
   requirements:
     - 'playtime-minutes 57600'
     - 'block-break COAL_ORE 500'
@@ -412,7 +411,7 @@ Qexample:
 Rexample:
   rank: 'consul-ii'
   next: 'consul-iii'
-  display-name: 'Consul II'
+  display-name: 'Consul III'
   requirements:
     - 'playtime-minutes 72000'
     - 'block-break OAK_LOG 8500'
@@ -430,7 +429,7 @@ Rexample:
 Sexample:
   rank: 'consul-iii'
   next: 'consul-iv'
-  display-name: 'Consul III'
+  display-name: 'Consul IV'
   requirements:
     - 'playtime-minutes 79200'
     - 'block-break DEEPSLATE_DIAMOND_ORE 1500'
@@ -448,7 +447,7 @@ Sexample:
 Texample:
   rank: 'consul-iv'
   next: 'consul-v'
-  display-name: 'Consul IV'
+  display-name: 'Consul V'
   requirements:
     - 'playtime-minutes 86400'
     - 'block-break EMERALD_ORE 1300'

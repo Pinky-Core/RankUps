@@ -21,9 +21,6 @@ public class VanguardRankUps extends JavaPlugin {
     
     @Override
     public void onEnable() {
-        // Save default config
-        saveDefaultConfig();
-        
         // Initialize managers
         this.configManager = new ConfigManager(this);
         this.databaseManager = new DatabaseManager(this);

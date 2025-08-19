@@ -267,6 +267,9 @@ public class RankupManager {
         // Reset rankup notification flag since player has ranked up
         playerData.setRankupNotificationSent(false);
         
+        // Reset statistics based on configuration
+        resetStatisticsAfterRankup(playerData, nextRankData);
+        
         // Update permissions/rank in LuckPerms if configured
         applyLuckPermsGroup(playerData, currentRank, nextRankData);
 
@@ -291,6 +294,113 @@ public class RankupManager {
         }
         
         return true;
+    }
+    
+    /**
+     * Reset statistics after rankup based on configuration
+     */
+    private void resetStatisticsAfterRankup(PlayerData playerData, Rank nextRankData) {
+        // Check if statistics should be reset
+        boolean resetMobKills = getRankupsYmlConfig().getBoolean("settings.reset_statistics.mob_kills", true);
+        boolean resetBlockBreaks = getRankupsYmlConfig().getBoolean("settings.reset_statistics.block_breaks", true);
+        boolean resetPlaytime = getRankupsYmlConfig().getBoolean("settings.reset_statistics.playtime", false);
+        boolean resetFishing = getRankupsYmlConfig().getBoolean("settings.reset_statistics.fishing", true);
+        boolean resetFarming = getRankupsYmlConfig().getBoolean("settings.reset_statistics.farming", true);
+        
+        // Reset mob kills if configured
+        if (resetMobKills) {
+            playerData.resetMobKills();
+            plugin.getLogger().info("Reset mob kills for player " + playerData.getPlayerName());
+        }
+        
+        // Reset block breaks if configured
+        if (resetBlockBreaks) {
+            playerData.resetBlockBreaks();
+            plugin.getLogger().info("Reset block breaks for player " + playerData.getPlayerName());
+        }
+        
+        // Reset playtime if configured (usually not recommended)
+        if (resetPlaytime) {
+            playerData.resetPlaytime();
+            plugin.getLogger().info("Reset playtime for player " + playerData.getPlayerName());
+        }
+        
+        // Reset fishing if configured
+        if (resetFishing) {
+            playerData.resetFishing();
+            plugin.getLogger().info("Reset fishing for player " + playerData.getPlayerName());
+        }
+        
+        // Reset farming if configured
+        if (resetFarming) {
+            playerData.resetFarming();
+            plugin.getLogger().info("Reset farming for player " + playerData.getPlayerName());
+        }
+    }
+    
+    /**
+     * Update requirements for a specific rank dynamically
+     */
+    public boolean updateRankRequirements(int rankLevel, String requirementType, String target, int newValue) {
+        Rank rank = plugin.getConfigManager().getRank(rankLevel);
+        if (rank == null) {
+            plugin.getLogger().warning("Cannot update requirements: Rank " + rankLevel + " not found");
+            return false;
+        }
+        
+        Map<String, Map<String, Integer>> requirements = rank.getRequirements();
+        if (requirements == null) {
+            requirements = new HashMap<>();
+            rank.setRequirements(requirements);
+        }
+        
+        switch (requirementType.toLowerCase()) {
+            case "mob_kills":
+                Map<String, Integer> mobKills = requirements.getOrDefault("mob_kills", new HashMap<>());
+                mobKills.put(target.toUpperCase(), newValue);
+                requirements.put("mob_kills", mobKills);
+                break;
+                
+            case "block_breaks":
+                Map<String, Integer> blockBreaks = requirements.getOrDefault("block_breaks", new HashMap<>());
+                blockBreaks.put(target.toUpperCase(), newValue);
+                requirements.put("block_breaks", blockBreaks);
+                break;
+                
+            case "playtime_minutes":
+                Map<String, Integer> playtime = requirements.getOrDefault("playtime_minutes", new HashMap<>());
+                playtime.put("total", newValue);
+                requirements.put("playtime_minutes", playtime);
+                break;
+                
+            case "fishing":
+                Map<String, Integer> fishing = requirements.getOrDefault("fishing", new HashMap<>());
+                fishing.put(target.toUpperCase(), newValue);
+                requirements.put("fishing", fishing);
+                break;
+                
+            case "farming":
+                Map<String, Integer> farming = requirements.getOrDefault("farming", new HashMap<>());
+                farming.put(target.toUpperCase(), newValue);
+                requirements.put("farming", farming);
+                break;
+                
+            default:
+                plugin.getLogger().warning("Unknown requirement type: " + requirementType);
+                return false;
+        }
+        
+        plugin.getLogger().info("Updated " + requirementType + " requirement for rank " + rankLevel + ": " + target + " = " + newValue);
+        return true;
+    }
+    
+    /**
+     * Get current requirements for a rank
+     */
+    public Map<String, Map<String, Integer>> getRankRequirements(int rankLevel) {
+        Rank rank = plugin.getConfigManager().getRank(rankLevel);
+        if (rank == null) return null;
+        return rank.getRequirements();
     }
     
     public void forceRankup(UUID playerUUID, int rank) {

@@ -28,7 +28,9 @@ public class RankupTabCompleter implements TabCompleter {
 			List<String> base = new ArrayList<>();
 			base.add("info");
 			base.add("progress");
+			base.add("p");           // Alias para progress
 			base.add("help");
+			base.add("h");           // Alias para help
 			base.add("confirm");
 			
 			// Comandos de admin que también están en /rankup (con verificación de permisos)
