@@ -58,6 +58,31 @@ public class RankupAdminTabCompleter implements TabCompleter {
 			}
 		}
 
+		if (args.length == 2) {
+			String sub = args[0].toLowerCase();
+			if (sub.equals("force") || sub.equals("reset") || sub.equals("setrank") || sub.equals("info")) {
+				List<String> players = new ArrayList<>();
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					players.add(p.getName());
+				}
+				StringUtil.copyPartialMatches(args[1], players, suggestions);
+				Collections.sort(suggestions);
+				return suggestions;
+			}
+			
+			if (sub.equals("requirements") || sub.equals("req")) {
+				List<String> rankOptions = new ArrayList<>();
+				// Sugerir números 1..maxRank (los requisitos empiezan en rango 1)
+				int max = plugin.getConfigManager().getMaxRank();
+				for (int i = 1; i <= max; i++) {
+					rankOptions.add(String.valueOf(i));
+				}
+				StringUtil.copyPartialMatches(args[1], rankOptions, suggestions);
+				Collections.sort(suggestions);
+				return suggestions;
+			}
+		}
+		
 		if (args.length == 3) {
 			String sub = args[0].toLowerCase();
 			if (sub.equals("setrank")) {
@@ -79,13 +104,13 @@ public class RankupAdminTabCompleter implements TabCompleter {
 			}
 			
 			if (sub.equals("requirements") || sub.equals("req")) {
-				List<String> rankOptions = new ArrayList<>();
-				// Sugerir números 1..maxRank (los requisitos empiezan en rango 1)
-				int max = plugin.getConfigManager().getMaxRank();
-				for (int i = 1; i <= max; i++) {
-					rankOptions.add(String.valueOf(i));
-				}
-				StringUtil.copyPartialMatches(args[2], rankOptions, suggestions);
+				List<String> requirementTypes = new ArrayList<>();
+				requirementTypes.add("mob_kills");
+				requirementTypes.add("block_breaks");
+				requirementTypes.add("playtime_minutes");
+				requirementTypes.add("fishing");
+				requirementTypes.add("farming");
+				StringUtil.copyPartialMatches(args[2], requirementTypes, suggestions);
 				Collections.sort(suggestions);
 				return suggestions;
 			}
@@ -94,33 +119,18 @@ public class RankupAdminTabCompleter implements TabCompleter {
 		if (args.length == 4) {
 			String sub = args[0].toLowerCase();
 			if (sub.equals("requirements") || sub.equals("req")) {
-				List<String> requirementTypes = new ArrayList<>();
-				requirementTypes.add("mob_kills");
-				requirementTypes.add("block_breaks");
-				requirementTypes.add("playtime_minutes");
-				requirementTypes.add("fishing");
-				requirementTypes.add("farming");
-				StringUtil.copyPartialMatches(args[3], requirementTypes, suggestions);
-				Collections.sort(suggestions);
-				return suggestions;
-			}
-		}
-		
-		if (args.length == 5) {
-			String sub = args[0].toLowerCase();
-			if (sub.equals("requirements") || sub.equals("req")) {
-				String requirementType = args[3].toLowerCase();
+				String requirementType = args[2].toLowerCase();
 				List<String> targets = new ArrayList<>();
 				
 				switch (requirementType) {
 					case "mob_kills":
-						targets.add("Zombie");
-						targets.add("Skeleton");
-						targets.add("Spider");
-						targets.add("Creeper");
-						targets.add("Enderman");
-						targets.add("Blaze");
-						targets.add("Wither");
+						targets.add("ZOMBIE");
+						targets.add("SKELETON");
+						targets.add("SPIDER");
+						targets.add("CREEPER");
+						targets.add("ENDERMAN");
+						targets.add("BLAZE");
+						targets.add("WITHER");
 						break;
 					case "block_breaks":
 						targets.add("STONE");
@@ -148,7 +158,7 @@ public class RankupAdminTabCompleter implements TabCompleter {
 						break;
 				}
 				
-				StringUtil.copyPartialMatches(args[4], targets, suggestions);
+				StringUtil.copyPartialMatches(args[3], targets, suggestions);
 				Collections.sort(suggestions);
 				return suggestions;
 			}
