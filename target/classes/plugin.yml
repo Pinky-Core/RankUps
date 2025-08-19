@@ -1,0 +1,45 @@
+name: VanguardRankUps
+version: '1.0.0'
+main: com.lewisainsworth.vanguardrankups.VanguardRankUps
+author: Lewis Ainsworth
+description: A comprehensive rankup plugin with configurable tasks and rewards
+api-version: '1.20'
+website: https://github.com/lewisainsworth/VanguardRankUps
+depend: []
+softdepend: [LuckPerms]
+
+commands:
+  rankup:
+    description: Main rankup command
+    usage: /rankup [force|reload|info|help] [player]
+    aliases: [ru, ranks]
+  rankupadmin:
+    description: Admin commands for rankup management
+    usage: /rankupadmin [reload|force|reset|setrank] [player] [rank]
+    aliases: [rua, rankupadmin]
+
+permissions:
+  vanguardrankups.rankup:
+    description: Allows players to use the rankup command
+    default: true
+  vanguardrankups.admin:
+    description: Allows access to admin commands
+    default: op
+    children:
+      vanguardrankups.rankup: true
+      vanguardrankups.force: true
+      vanguardrankups.reload: true
+      vanguardrankups.reset: true
+      vanguardrankups.setrank: true
+  vanguardrankups.force:
+    description: Allows forcing rankups for players
+    default: op
+  vanguardrankups.reload:
+    description: Allows reloading the plugin configuration
+    default: op
+  vanguardrankups.reset:
+    description: Allows resetting player progress
+    default: op
+  vanguardrankups.setrank:
+    description: Allows setting player ranks directly
+    default: op 

@@ -1,0 +1,466 @@
+# VanguardRankUps Configuration
+# Author: Lewis Ainsworth
+# Este archivo contiene toda la configuración del plugin
+
+# Configuración de Base de Datos
+database:
+  type: "sqlite" # sqlite, mysql
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "rankups"
+    username: "root"
+    password: "password"
+  sqlite:
+    file: "rankups.db"
+
+# Configuración General
+settings:
+  prefix: "&8[&cVanguard&bRankUps&8] &r"
+  debug: false
+  auto-save-interval: 300 # segundos
+  max-rank: 10
+  luckperms:
+    enabled: true
+    remove_previous_group: true
+    respect_luckperms_prefix: true
+
+# Configuración de Mensajes
+messages:
+  no_permission: "&cNo tienes permisos para usar este comando."
+  player_not_found: "&cJugador no encontrado."
+  rankup_success: "&a¡Felicidades! Has alcanzado el rango %rank%!"
+  rankup_failed: "&cNo cumples los requisitos para el siguiente rango."
+  already_max_rank: "&cYa tienes el rango máximo."
+  config_reloaded: "&aConfiguración recargada exitosamente."
+  rank_forced: "&aRango forzado para %player%."
+  rank_reset: "&aProgreso de %player% reseteado."
+  rank_set: "&aRango de %player% establecido a %rank%."
+  
+  # Mensajes de progreso - Traducciones firmes
+  progress_mob_kills: "&cMobs eliminados: %current%/%required%"
+  progress_block_breaks: "&6Bloques minados: %current%/%required%"
+  progress_playtime: "&eTiempo jugado: %current%/%required% minutos"
+  progress_fishing: "&bPescas: %current%/%required%"
+  progress_farming: "&aCultivos: %current%/%required%"
+  
+  # Mensajes de GUI
+  gui_title: "&8VanguardRankUps - %player%"
+  gui_progress_title: "&bProgreso del Rango"
+  gui_requirements_title: "&cRequisitos Pendientes"
+  gui_completed: "&a&l¡Completado!"
+  gui_incomplete: "&7%current%&8/&f%required%"
+
+# Configuración de Sonidos
+sounds:
+  rankup_success: "ENTITY_PLAYER_LEVELUP"
+  progress_update: "BLOCK_NOTE_BLOCK_PLING"
+
+# Configuración de GUI - Personalizable
+gui:
+  title: "&8VanguardRankUps - %player%"
+  progress_bar:
+    filled: "&a█"
+    empty: "&7█"
+    length: 20
+    show_percentage: true
+    show_numbers: true
+  colors:
+    title: "&b&l"
+    section: "&e&l"
+    completed: "&a&l"
+    incomplete: "&7"
+    separator: "&8&m"
+  layout:
+    show_progress_bars: true
+    show_detailed_stats: true
+    show_rank_info: true
+    show_next_rank_preview: true
+
+# ========================================
+# CONFIGURACIÓN DE RANGOS
+# ========================================
+
+# Rango 1: Default -> Plebeyo I
+Aexample:
+  # nombre del grupo que el jugador necesita tener para subir
+  rank: 'default'
+  # nombre del grupo que el jugador obtendra
+  next: 'plebeyo-i'
+  display-name: 'X'
+  # Lista de requisitos para poder subir al siguiente rango
+  # https://okx.sh/rankup/List-of-Requirements.html
+  requirements:
+    - 'playtime-minutes 20'
+    - 'block-break STONE 100'
+    - 'mob-kills Zombie 10'
+  commands:
+    - 'eco give %player_name% 3000'
+    - 'give %player_name% golden_apple 16'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'playsound ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'particle firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+#Aqui te dejo un ejemplo para que pongas lo que ocupan por rango.
+#qlo si crees que voy a buscar y modificar placeholder por cada tipo de requisitos .|.
+  rankup:
+    requirements-not-met: |-
+      &4&m+                                       +
+      &cNecesitas
+      &c- &d&lTiempo Jugado &c&l- &b[%progress_bar_{statistic_minutes_played}_c:&d|_p:&d|_r:&3|_l:20_m:20_fullbar:&a&lCompletado!%&b]
+      &c- &d&lPiedra Minada &c&l- &b[%progress_bar_{statistic_mine_block:stone}_c:&d|_p:&d|_r:&3|_l:20_m:100_fullbar:&a&lCompletado!%&b]
+      &c- &d&lZombies Asesinados &c&l- &b[%progress_bar_{statistic_kill_entity:Zombie}_c:&d|_p:&d|_r:&3|_l:20_m:10_fullbar:&a&lCompletado!%&b]
+      &cPara subir de &7&l%rankup_current_rank%&r&c a &e&l%rankup_next_rank%&r&c!
+      &cMas informacion en: &awiki.vanguardmc.org
+      &4&m+                                       +
+Bexample:
+  rank: 'plebeyo-i'
+  next: 'plebeyo-ii'
+  display-name: 'Plebeyo I'  
+  requirements:
+    - 'playtime-minutes 60'
+    - 'block-break STONE 200'
+    - 'mob-kills Zombie 20'
+  commands:
+    - 'eco give %player_name% 4000'
+    - 'give %player_name% golden_apple 32'
+    - 'give %player_name% name_tag 2'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'playsound ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'particle firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+
+Cexample:
+  rank: 'plebeyo-ii'
+  next: 'plebeyo-iii'
+  display-name: 'Plebeyo II'
+  requirements:
+    - 'playtime-minutes 120'
+    - 'block-break STONE 300'
+    - 'mob-kills Zombie 50'
+  commands:
+    - 'eco give %player_name% 5000'
+    - 'give %player_name% golden_apple 64'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+
+Dexample:
+  rank: 'plebeyo-iii'
+  next: 'plebeyo-iv'
+  display-name: 'Plebeyo III'
+  requirements:
+    - 'playtime-minutes 1440'
+    - 'block-break STONE 1000'
+    - 'mob-kills Zombie 100'
+  commands:
+    - 'eco give %player_name% 6000'
+    - 'give %player_name% golden_apple 80'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+
+Eexample:
+  rank: 'plebeyo-iv'
+  next: 'plebeyo-v'
+  display-name: 'Plebeyo IV'
+  requirements:
+    - 'playtime-minutes 2880'
+    - 'block-break STONE 5000'
+    - 'mob-kills Zombie 150'
+    - 'mob-kills Blaze 10'
+  commands:
+    - 'eco give %player_name% 7000'
+    - 'ekit potrank %player_name%'
+    - 'give %player_name% obsidian 32'
+    - 'give %player_name% end_crystal 2'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% rara 1'
+
+Fexample:
+  rank: 'plebeyo-v'
+  next: 'legionario-i'
+  display-name: 'Plebeyo V'
+  requirements:
+    - 'playtime-minutes 6000'
+    - 'block-break IRON_ORE 500'
+    - 'mob-kills Zombie 200'
+    - 'mob-kills Blaze 100'
+  commands:
+    - 'eco give %player_name% 8000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% comun 10'
+    - 'crates key give %player_name% rara 2'
+    - 'crates key give %player_name% epica 1'
+
+Gexample:
+  rank: 'legionario-i'
+  next: 'legionario-ii'
+  display-name: 'Legionario I'
+  requirements:
+    - 'playtime-minutes 7000'
+    - 'block-break DEEPSLATE_DIAMOND_ORE 250'
+    - 'mob-kills skeleton 100'
+    - 'mob-kills Blaze 125'
+  commands:
+    - 'eco give %player_name% 9000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+
+Hexample:
+  rank: 'legionario-ii'
+  next: 'legionario-iii'
+  display-name: 'Legionario II'
+  requirements:
+    - 'playtime-minutes 8000'
+    - 'block-break DEEPSLATE_DIAMOND_ORE 500'
+    - 'mob-kills skeleton 200'
+    - 'mob-kills Blaze 150'
+  commands:
+    - 'eco give %player_name% 10000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% rara 4'
+
+Iexample:
+  rank: 'legionario-iii'
+  next: 'legionario-iv'
+  display-name: 'Legionario III'
+  requirements:
+    - 'playtime-minutes 18720'
+    - 'block-break EMERALD_ORE 250'
+    - 'mob-kills Zombie 500'
+    - 'mob-kills Blaze 200'
+  commands:
+    - 'eco give %player_name% 11000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+
+Jexample:
+  rank: 'legionario-iv'
+  next: 'legionario-v'
+  display-name: 'Legionario IV'
+  requirements:
+    - 'playtime-minutes 21600'
+    - 'block-break EMERALD_ORE 500'
+    - 'mob-kills skeleton 500'
+    - 'mob-kills Blaze 250'
+  commands:
+    - 'eco give %player_name% 12000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'give %player_name% netherstar 1'
+    - 'crates key give %player_name% rara 3'
+    - 'crates key give %player_name% epica 2'
+
+Kexample:
+  rank: 'legionario-v'
+  next: 'tribuno-i'
+  display-name: 'Legionario V'
+  requirements:
+    - 'playtime-minutes 28800'
+    - 'block-break EMERALD_ORE 800'
+    - 'mob-kills Zombie 1000'
+    - 'mob-kills Blaze 300'
+  commands:
+    - 'eco give %player_name% 13000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'give %player_name% beacon 1'
+    - 'crates key give %player_name% epica 3'
+ 
+Lexample:
+  rank: 'tribuno-i'
+  next: 'tribuno-ii'
+  display-name: 'Tribuno I'
+  requirements:
+    - 'playtime-minutes 33120'
+    - 'block-break STONE 7500'
+    - 'mob-kills skeleton 1000'
+    - 'mob-kills Blaze 350'
+  commands:
+    - 'eco give %player_name% 14000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% epica 5'
+
+Mexample:
+  rank: 'tribuno-ii'
+  next: 'tribuno-iii'
+  display-name: 'Tribuno II'
+  requirements:
+    - 'playtime-minutes 37440'
+    - 'block-break OAK_LOG 4000'
+    - 'mob-kills Zombie 2000'
+    - 'mob-kills Blaze 400'
+  commands:
+    - 'eco give %player_name% 15000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% rara 6'
+    - 'crates key give %player_name% epica 5'
+
+Nexample:
+  rank: 'tribuno-iii'
+  next: 'tribuno-iv'
+  display-name: 'Tribuno III'
+  requirements:
+    - 'playtime-minutes 43200'
+    - 'block-break DEEPSLATE_DIAMOND_ORE 1100'
+    - 'mob-kills skeleton 2000'
+    - 'mob-kills Blaze 450'
+  commands:
+    - 'eco give %player_name% 16000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'voucher give Fly 1 %player_name%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% rara 10'
+
+Oexample:
+  rank: 'tribuno-iv'
+  next: 'tribuno-v'
+  display-name: 'Tribuno IV'
+  requirements:
+    - 'playtime-minutes 47520'
+    - 'block-break EMERALD_ORE 1000'
+    - 'mob-kills Zombie 5000'
+    - 'mob-kills Blaze 500'
+  commands:
+    - 'eco give %player_name% 17000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'give %player_name% goldenapple 128'
+    - 'crates key give %player_name% epica 5'
+
+Pexample:
+  rank: 'tribuno-v'
+  next: 'consul-i'
+  display-name: 'Tribuno V'
+  requirements:
+    - 'playtime-minutes 50400'
+    - 'block-break OAK_LOG 6000'
+    - 'mob-kills skeleton 5000'
+    - 'mob-kills Blaze 550'
+  commands:
+    - 'eco give %player_name% 18000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% epica 5'
+
+Qexample:
+  rank: 'consul-i'
+  next: 'consul-ii'
+  display-name: 'Consul I'
+  requirements:
+    - 'playtime-minutes 57600'
+    - 'block-break COAL_ORE 500'
+    - 'mob-kills wither 20'
+  commands:
+    - 'eco give %player_name% 19000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% rara 10'
+    - 'crates key give %player_name% epica 5'
+
+Rexample:
+  rank: 'consul-ii'
+  next: 'consul-iii'
+  display-name: 'Consul II'
+  requirements:
+    - 'playtime-minutes 72000'
+    - 'block-break OAK_LOG 8500'
+    - 'mob-kills wither 10'
+  commands:
+    - 'eco give %player_name% 20000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% rara 10'
+    - 'crates key give %player_name% epica 5'
+
+Sexample:
+  rank: 'consul-iii'
+  next: 'consul-iv'
+  display-name: 'Consul III'
+  requirements:
+    - 'playtime-minutes 79200'
+    - 'block-break DEEPSLATE_DIAMOND_ORE 1500'
+    - 'mob-kills wither 40'
+  commands:
+    - 'eco give %player_name% 30000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% rara 12'
+    - 'crates key give %player_name% epica 6'
+
+Texample:
+  rank: 'consul-iv'
+  next: 'consul-v'
+  display-name: 'Consul IV'
+  requirements:
+    - 'playtime-minutes 86400'
+    - 'block-break EMERALD_ORE 1300'
+    - 'mob-kills wither 60'
+  commands:
+    - 'eco give %player_name% 50000'
+    - 'lp user %player_name% parent remove %rankup_current_rank%'
+    - 'lp user %player_name% parent add %rankup_next_rank%'
+    - 'execute at %player_name% run playsound minecraft:ui.toast.challenge_complete player %player_name% ~ ~ ~'
+    - 'execute at %player_name% run particle minecraft:firework ~ ~1 ~ 1 1 1 0 50 normal'
+    - 'title %player_name% title {"text":"Subiste de rango!","bold":true,"color":"light_purple"}'
+    - 'crates key give %player_name% rara 10'
+    - 'crates key give %player_name% epica 10'
+    - 'crates key give %player_name% comun 10'
+    - 'crates key give %player_name% legendaria 1'
