@@ -4,6 +4,7 @@ D:\GitHub\RankUps\src\main\java\com\lewisainsworth\vanguardrankups\listeners\Pla
 D:\GitHub\RankUps\src\main\java\com\lewisainsworth\vanguardrankups\VanguardRankUps.java
 D:\GitHub\RankUps\src\main\java\com\lewisainsworth\vanguardrankups\managers\DatabaseManager.java
 D:\GitHub\RankUps\src\main\java\com\lewisainsworth\vanguardrankups\models\Rank.java
+D:\GitHub\RankUps\src\main\java\com\lewisainsworth\vanguardrankups\listeners\QuestListener.java
 D:\GitHub\RankUps\src\main\java\com\lewisainsworth\vanguardrankups\managers\RankupManager.java
 D:\GitHub\RankUps\src\main\java\com\lewisainsworth\vanguardrankups\commands\RankupTabCompleter.java
 D:\GitHub\RankUps\src\main\java\com\lewisainsworth\vanguardrankups\commands\RankupAdminCommand.java

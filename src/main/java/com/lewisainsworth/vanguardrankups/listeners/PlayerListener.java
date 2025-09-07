@@ -28,7 +28,12 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        plugin.getRankupManager().getOrCreatePlayerData(player.getUniqueId(), player.getName());
+        PlayerData playerData = plugin.getRankupManager().getOrCreatePlayerData(player.getUniqueId(), player.getName());
+        
+        // Iniciar tracking de tiempo online
+        if (playerData != null) {
+            playerData.startPlaytimeTracking();
+        }
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -37,7 +42,8 @@ public class PlayerListener implements Listener {
         PlayerData playerData = plugin.getRankupManager().getPlayerData(player.getUniqueId());
         
         if (playerData != null) {
-            playerData.updatePlaytime();
+            // Finalizar tracking de tiempo online
+            playerData.stopPlaytimeTracking();
             plugin.getDatabaseManager().savePlayerData(playerData);
             plugin.getRankupManager().removePlayerData(player.getUniqueId());
         }

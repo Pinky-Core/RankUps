@@ -31,6 +31,14 @@
             <id>lucko</id>
             <url>https://repo.lucko.me/</url>
         </repository>
+        <repository>
+            <id>repo.leonardobishop.com</id>
+            <url>https://repo.leonardobishop.com/releases/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -45,6 +53,14 @@
             <artifactId>api</artifactId>
             <version>5.4</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- Quests Plugin Dependency - Using local JAR from libs/ folder -->
+        <dependency>
+            <groupId>com.leonardobishop</groupId>
+            <artifactId>Quests</artifactId>
+            <version>3.15.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/Quests-3.15.2.jar</systemPath>
         </dependency>
     </dependencies>
 

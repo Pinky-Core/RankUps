@@ -56,6 +56,19 @@ public class RankupAdminCommand implements CommandExecutor {
                 handleRequirements(sender, args);
                 break;
                 
+            case "addrequirement":
+            case "addreq":
+                handleAddRequirement(sender, args);
+                break;
+                
+            case "fixplaytime":
+                handleFixPlaytime(sender, args);
+                break;
+                
+            case "syncplaytime":
+                handleSyncPlaytime(sender, args);
+                break;
+                
             case "help":
                 showHelp(sender);
                 break;
@@ -79,6 +92,9 @@ public class RankupAdminCommand implements CommandExecutor {
         sender.sendMessage("§7/rankupadmin info <jugador> §8- §fVer información de un jugador");
         sender.sendMessage("§7/rankupadmin requirements <rango> §8- §fVer requisitos de un rango");
         sender.sendMessage("§7/rankupadmin requirements <rango> <tipo> <objetivo> <valor> §8- §fCambiar requisito");
+        sender.sendMessage("§7/rankupadmin addrequirement <jugador> <tipo> <objetivo> <cantidad> §8- §fSumar requisito a jugador");
+        sender.sendMessage("§7/rankupadmin fixplaytime <jugador> <minutos> §8- §fCorregir tiempo jugado de un jugador");
+        sender.sendMessage("§7/rankupadmin syncplaytime <jugador|all> §8- §fSincronizar tiempo con estadísticas de Minecraft");
         sender.sendMessage("§7/rankupadmin help §8- §fMostrar esta ayuda");
         sender.sendMessage("§8§m" + "─".repeat(20));
     }
@@ -202,7 +218,8 @@ public class RankupAdminCommand implements CommandExecutor {
         sender.sendMessage("§b§lInformación de " + target.getName());
         sender.sendMessage("§8§m" + "─".repeat(20));
         sender.sendMessage("§7Rango actual: §f" + targetData.getCurrentRank());
-        sender.sendMessage("§7Tiempo total jugado: §f" + plugin.getMessageUtils().formatTime(targetData.getPlaytimeMinutes()));
+        sender.sendMessage("§7Tiempo total jugado: §f" + targetData.getFormattedPlaytime());
+        sender.sendMessage("§7Tiempo en minutos: §f" + targetData.getPlaytimeMinutes() + " min");
         
         // Mob kills
         if (!targetData.getMobKills().isEmpty()) {
@@ -368,6 +385,270 @@ public class RankupAdminCommand implements CommandExecutor {
         } else {
             plugin.getMessageUtils().sendMessage(sender, "§c❌ Error al actualizar el requisito");
             plugin.getMessageUtils().sendMessage(sender, "§7Tipos válidos: mob_kills, block_breaks, playtime_minutes, fishing, farming");
+        }
+    }
+    
+    /**
+     * Handle adding requirements to a player
+     */
+    private void handleAddRequirement(CommandSender sender, String[] args) {
+        if (args.length < 5) {
+            plugin.getMessageUtils().sendMessage(sender, "§cUso: /rankupadmin addrequirement <jugador> <tipo> <objetivo> <cantidad>");
+            plugin.getMessageUtils().sendMessage(sender, "§7Tipos válidos: mob_kills, block_breaks, playtime_minutes, fishing, farming, quests");
+            plugin.getMessageUtils().sendMessage(sender, "§7Ejemplo: /rankupadmin addrequirement Player123 quests total 30");
+            return;
+        }
+        
+        String targetName = args[1];
+        String requirementType = args[2].toLowerCase();
+        String target = args[3];
+        int amount;
+        
+        try {
+            amount = Integer.parseInt(args[4]);
+            if (amount < 0) {
+                plugin.getMessageUtils().sendMessage(sender, "§cLa cantidad debe ser mayor o igual a 0");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            plugin.getMessageUtils().sendMessage(sender, "§cLa cantidad debe ser un número válido");
+            return;
+        }
+        
+        // Get player data
+        PlayerData playerData = plugin.getRankupManager().getOrCreatePlayerData(
+            Bukkit.getOfflinePlayer(targetName).getUniqueId(), 
+            targetName
+        );
+        
+        boolean success = false;
+        String message = "";
+        
+        switch (requirementType) {
+            case "mob_kills":
+                int currentMobKills = playerData.getMobKills(target);
+                // Agregar la cantidad especificada
+                for (int i = 0; i < amount; i++) {
+                    playerData.addMobKill(target);
+                }
+                success = true;
+                message = "§a✅ Mobs eliminados de " + target + " sumados exitosamente!";
+                break;
+                
+            case "block_breaks":
+                int currentBlockBreaks = playerData.getBlockBreaks(target);
+                // Agregar la cantidad especificada
+                for (int i = 0; i < amount; i++) {
+                    playerData.addBlockBreak(target);
+                }
+                success = true;
+                message = "§a✅ Bloques minados de " + target + " sumados exitosamente!";
+                break;
+                
+            case "playtime_minutes":
+                long currentPlaytime = playerData.getPlaytimeMinutes();
+                // Agregar tiempo jugado directamente
+                playerData.addPlaytimeMinutes(amount);
+                success = true;
+                message = "§a✅ Tiempo jugado sumado exitosamente!";
+                break;
+                
+            case "fishing":
+                int currentFishing = playerData.getFishingCatches(target);
+                // Agregar la cantidad especificada
+                for (int i = 0; i < amount; i++) {
+                    playerData.addFishingCatch(target);
+                }
+                success = true;
+                message = "§a✅ Pesca de " + target + " sumada exitosamente!";
+                break;
+                
+            case "farming":
+                int currentFarming = playerData.getFarmingHarvests(target);
+                // Agregar la cantidad especificada
+                for (int i = 0; i < amount; i++) {
+                    playerData.addFarmingHarvest(target);
+                }
+                success = true;
+                message = "§a✅ Agricultura de " + target + " sumada exitosamente!";
+                break;
+                
+            case "quests":
+                int currentQuests = playerData.getTotalCompletedQuests();
+                // Agregar la cantidad especificada
+                for (int i = 0; i < amount; i++) {
+                    playerData.addCompletedQuest();
+                }
+                success = true;
+                message = "§a✅ Misiones completadas sumadas exitosamente!";
+                break;
+                
+            default:
+                plugin.getMessageUtils().sendMessage(sender, "§c❌ Tipo de requisito inválido");
+                plugin.getMessageUtils().sendMessage(sender, "§7Tipos válidos: mob_kills, block_breaks, playtime_minutes, fishing, farming, quests");
+                return;
+        }
+        
+        if (success) {
+            // Save player data
+            plugin.getDatabaseManager().savePlayerData(playerData);
+            
+            // Send success message
+            plugin.getMessageUtils().sendMessage(sender, message);
+            plugin.getMessageUtils().sendMessage(sender, "§7Jugador: §f" + targetName);
+            plugin.getMessageUtils().sendMessage(sender, "§7Tipo: §f" + requirementType);
+            plugin.getMessageUtils().sendMessage(sender, "§7Objetivo: §f" + target);
+            plugin.getMessageUtils().sendMessage(sender, "§7Cantidad sumada: §f" + amount);
+            
+            // Show updated player info
+            if (sender.hasPermission("vanguardrankups.admin")) {
+                handlePlayerInfo(sender, new String[]{"info", targetName});
+            }
+        }
+    }
+    
+    /**
+     * Handle fixing playtime for a player
+     */
+    private void handleFixPlaytime(CommandSender sender, String[] args) {
+        if (args.length < 3) {
+            plugin.getMessageUtils().sendMessage(sender, "§cUso: /rankupadmin fixplaytime <jugador> <minutos>");
+            plugin.getMessageUtils().sendMessage(sender, "§7Ejemplo: /rankupadmin fixplaytime Player123 120");
+            return;
+        }
+        
+        String targetName = args[1];
+        int newMinutes;
+        
+        try {
+            newMinutes = Integer.parseInt(args[2]);
+            if (newMinutes < 0) {
+                plugin.getMessageUtils().sendMessage(sender, "§cLos minutos deben ser mayor o igual a 0");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            plugin.getMessageUtils().sendMessage(sender, "§cLos minutos deben ser un número válido");
+            return;
+        }
+        
+        // Get player data
+        PlayerData playerData = plugin.getRankupManager().getOrCreatePlayerData(
+            Bukkit.getOfflinePlayer(targetName).getUniqueId(), 
+            targetName
+        );
+        
+        // Get current playtime for comparison
+        long currentMinutes = playerData.getPlaytimeMinutes();
+        
+        // Reset playtime and set new value
+        playerData.resetPlaytime();
+        playerData.addPlaytimeMinutes(newMinutes);
+        
+        // Save player data
+        plugin.getDatabaseManager().savePlayerData(playerData);
+        
+        // Send success message
+        plugin.getMessageUtils().sendMessage(sender, "§a✅ Tiempo jugado corregido exitosamente!");
+        plugin.getMessageUtils().sendMessage(sender, "§7Jugador: §f" + targetName);
+        plugin.getMessageUtils().sendMessage(sender, "§7Tiempo anterior: §f" + currentMinutes + " minutos");
+        plugin.getMessageUtils().sendMessage(sender, "§7Nuevo tiempo: §f" + newMinutes + " minutos");
+        
+        // Show updated player info
+        if (sender.hasPermission("vanguardrankups.admin")) {
+            handlePlayerInfo(sender, new String[]{"info", targetName});
+        }
+    }
+    
+    /**
+     * Handle syncing playtime for players using PlaceholderAPI
+     */
+    private void handleSyncPlaytime(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            plugin.getMessageUtils().sendMessage(sender, "§cUso: /rankupadmin syncplaytime <jugador|all>");
+            plugin.getMessageUtils().sendMessage(sender, "§7Ejemplos:");
+            plugin.getMessageUtils().sendMessage(sender, "§7  /rankupadmin syncplaytime Player123");
+            plugin.getMessageUtils().sendMessage(sender, "§7  /rankupadmin syncplaytime all");
+            return;
+        }
+        
+        String target = args[1].toLowerCase();
+        
+        if (target.equals("all")) {
+            // Sync all online players
+            syncAllPlayersPlaytime(sender);
+        } else {
+            // Sync specific player
+            syncPlayerPlaytime(sender, target);
+        }
+    }
+    
+    private void syncAllPlayersPlaytime(CommandSender sender) {
+        plugin.getMessageUtils().sendMessage(sender, "§a🔄 Sincronizando tiempo de todos los jugadores online...");
+        
+        int syncedCount = 0;
+        int totalPlayers = Bukkit.getOnlinePlayers().size();
+        
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (syncPlayerPlaytimeInternal(player.getName())) {
+                syncedCount++;
+            }
+        }
+        
+        plugin.getMessageUtils().sendMessage(sender, "§a✅ Sincronización completada!");
+        plugin.getMessageUtils().sendMessage(sender, "§7Jugadores sincronizados: §f" + syncedCount + "/" + totalPlayers);
+    }
+    
+    private void syncPlayerPlaytime(CommandSender sender, String playerName) {
+        Player targetPlayer = Bukkit.getPlayer(playerName);
+        if (targetPlayer == null) {
+            plugin.getMessageUtils().sendMessage(sender, "§c❌ El jugador " + playerName + " no está online");
+            return;
+        }
+        
+        if (syncPlayerPlaytimeInternal(playerName)) {
+            plugin.getMessageUtils().sendMessage(sender, "§a✅ Tiempo sincronizado para " + playerName);
+        } else {
+            plugin.getMessageUtils().sendMessage(sender, "§c❌ Error al sincronizar tiempo para " + playerName);
+        }
+    }
+    
+    private boolean syncPlayerPlaytimeInternal(String playerName) {
+        try {
+            Player targetPlayer = Bukkit.getPlayer(playerName);
+            if (targetPlayer == null) {
+                return false;
+            }
+            
+            // Get player data
+            PlayerData playerData = plugin.getRankupManager().getOrCreatePlayerData(
+                targetPlayer.getUniqueId(), 
+                playerName
+            );
+            
+            // Get real playtime from Minecraft statistics (more reliable than PlaceholderAPI)
+            int playTicks = targetPlayer.getStatistic(org.bukkit.Statistic.PLAY_ONE_MINUTE);
+            
+            // Convert ticks to minutes (20 ticks = 1 second, 1200 ticks = 1 minute)
+            int realMinutes = playTicks / 1200;
+            
+            // Get current playtime for comparison
+            long currentMinutes = playerData.getPlaytimeMinutes();
+            
+            // Set the real playtime
+            playerData.setPlaytimeMinutes(realMinutes);
+            
+            // Save player data
+            plugin.getDatabaseManager().savePlayerData(playerData);
+            
+            if (plugin.getConfigManager().isDebug()) {
+                plugin.getLogger().info("Synced playtime for " + playerName + ": " + currentMinutes + " -> " + realMinutes + " minutes (from " + playTicks + " ticks)");
+            }
+            
+            return true;
+            
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error syncing playtime for " + playerName + ": " + e.getMessage());
+            return false;
         }
     }
 } 

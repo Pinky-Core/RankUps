@@ -34,7 +34,7 @@ public class TaskManager {
             }.runTaskTimerAsynchronously(plugin, autoSaveInterval * 20L, autoSaveInterval * 20L);
         }
         
-        // Playtime tracking task
+        // Playtime tracking task - solo cada minuto, no cada segundo
         playtimeTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -43,11 +43,12 @@ public class TaskManager {
                     PlayerData playerData = plugin.getRankupManager().getPlayerData(playerUUID);
                     
                     if (playerData != null) {
+                        // Solo actualizar tiempo cada minuto, no cada segundo
                         playerData.updatePlaytime();
                     }
                 }
             }
-        }.runTaskTimer(plugin, 20L, 20L); // Update every second
+        }.runTaskTimer(plugin, 1200L, 1200L); // Update every minute (1200 ticks = 60 seconds)
     }
     
     public void stopScheduler() {

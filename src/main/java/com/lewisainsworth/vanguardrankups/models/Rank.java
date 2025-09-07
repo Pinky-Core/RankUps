@@ -116,4 +116,8 @@ public class Rank {
     public Map<String, Integer> getFarming() {
         return requirements.getOrDefault("farming", new HashMap<>());
     }
+    
+    public int getRequiredQuests() {
+        return requirements.getOrDefault("quests", new HashMap<>()).getOrDefault("total", 0);
+    }
 } 

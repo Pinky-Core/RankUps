@@ -30,6 +30,7 @@ settings:
     playtime: false      # Reset playtime after rankup (usually not recommended)
     fishing: true        # Reset fishing after rankup
     farming: true        # Reset farming after rankup
+    quests: false        # Reset completed quests after rankup
 
 # Configuración de Mensajes
 messages:
@@ -49,11 +50,13 @@ messages:
   # progress_playtime: "&eTiempo jugado: %current%/%required% minutos"
   # progress_fishing: "&bPescas: %current%/%required%"
   # progress_farming: "&aCultivos: %current%/%required%"
+  # progress_quests: "&bMisiones completadas: %current%/%required%"
   progress_mob_kills: ""
   progress_block_breaks: ""
   progress_playtime: ""
   progress_fishing: ""
   progress_farming: ""
+  progress_quests: ""
   
   # Mensajes de GUI
   gui_title: "&8VanguardRankUps - %player%"
@@ -105,6 +108,7 @@ Aexample:
     - 'playtime-minutes 20'
     - 'block-break STONE 100'
     - 'mob-kills Zombie 10'
+    - 'quests 5'
   commands:
     - 'eco give %player_name% 3000'
     - 'give %player_name% golden_apple 16'
@@ -121,6 +125,7 @@ Bexample:
     - 'playtime-minutes 60'
     - 'block-break STONE 200'
     - 'mob-kills Zombies 20'
+    - 'quests 20'
   commands:
     - 'eco give %player_name% 4000'
     - 'give %player_name% golden_apple 32'
@@ -139,6 +144,7 @@ Cexample:
     - 'playtime-minutes 120'
     - 'block-break STONE 300'
     - 'mob-kills Zombie 50'
+    - 'quests 50'
   commands:
     - 'eco give %player_name% 5000'
     - 'give %player_name% golden_apple 64'
@@ -156,6 +162,7 @@ Dexample:
     - 'playtime-minutes 1440'
     - 'block-break STONE 1000'
     - 'mob-kills Zombie 100'
+    - 'quests 70'
   commands:
     - 'eco give %player_name% 6000'
     - 'give %player_name% golden_apple 80'
@@ -174,6 +181,7 @@ Eexample:
     - 'block-break STONE 5000'
     - 'mob-kills Zombie 150'
     - 'mob-kills Blaze 10'
+    - 'quests 100'
   commands:
     - 'eco give %player_name% 7000'
     - 'ekit potrank %player_name%'
@@ -195,6 +203,7 @@ Fexample:
     - 'block-break IRON_ORE 500'
     - 'mob-kills Zombie 200'
     - 'mob-kills Blaze 100'
+    - 'quests 130'
   commands:
     - 'eco give %player_name% 8000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -215,6 +224,7 @@ Gexample:
     - 'block-break DEEPSLATE_DIAMOND_ORE 250'
     - 'mob-kills skeleton 100'
     - 'mob-kills Blaze 125'
+    - 'quests 150'
   commands:
     - 'eco give %player_name% 9000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -232,6 +242,7 @@ Hexample:
     - 'block-break DEEPSLATE_DIAMOND_ORE 500'
     - 'mob-kills skeleton 200'
     - 'mob-kills Blaze 150'
+    - 'quests 180'
   commands:
     - 'eco give %player_name% 10000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -250,6 +261,7 @@ Iexample:
     - 'block-break EMERALD_ORE 250'
     - 'mob-kills Zombie 500'
     - 'mob-kills Blaze 200'
+    - 'quests 200'
   commands:
     - 'eco give %player_name% 11000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -267,6 +279,7 @@ Jexample:
     - 'block-break EMERALD_ORE 500'
     - 'mob-kills skeleton 500'
     - 'mob-kills Blaze 250'
+    - 'quests 220'
   commands:
     - 'eco give %player_name% 12000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -287,6 +300,7 @@ Kexample:
     - 'block-break EMERALD_ORE 800'
     - 'mob-kills Zombie 1000'
     - 'mob-kills Blaze 300'
+    - 'quests 250'
   commands:
     - 'eco give %player_name% 13000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -306,6 +320,7 @@ Lexample:
     - 'block-break STONE 7500'
     - 'mob-kills skeleton 1000'
     - 'mob-kills Blaze 350'
+    - 'quests 270'
   commands:
     - 'eco give %player_name% 14000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -324,6 +339,7 @@ Mexample:
     - 'block-break OAK_LOG 4000'
     - 'mob-kills Zombie 2000'
     - 'mob-kills Blaze 400'
+    - 'quests 290'
   commands:
     - 'eco give %player_name% 15000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -343,6 +359,7 @@ Nexample:
     - 'block-break DEEPSLATE_DIAMOND_ORE 1100'
     - 'mob-kills skeleton 2000'
     - 'mob-kills Blaze 450'
+    - 'quests 310'
   commands:
     - 'eco give %player_name% 16000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -362,6 +379,7 @@ Oexample:
     - 'block-break EMERALD_ORE 1000'
     - 'mob-kills Zombie 5000'
     - 'mob-kills Blaze 500'
+    - 'quests 330'
   commands:
     - 'eco give %player_name% 17000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -381,6 +399,7 @@ Pexample:
     - 'block-break OAK_LOG 6000'
     - 'mob-kills skeleton 5000'
     - 'mob-kills Blaze 550'
+    - 'quests 350'
   commands:
     - 'eco give %player_name% 18000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -398,6 +417,7 @@ Qexample:
     - 'playtime-minutes 57600'
     - 'block-break COAL_ORE 500'
     - 'mob-kills wither 20'
+    - 'quests 370'
   commands:
     - 'eco give %player_name% 19000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -416,6 +436,7 @@ Rexample:
     - 'playtime-minutes 72000'
     - 'block-break OAK_LOG 8500'
     - 'mob-kills wither 10'
+    - 'quests 390'
   commands:
     - 'eco give %player_name% 20000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -434,6 +455,7 @@ Sexample:
     - 'playtime-minutes 79200'
     - 'block-break DEEPSLATE_DIAMOND_ORE 1500'
     - 'mob-kills wither 40'
+    - 'quests 410'
   commands:
     - 'eco give %player_name% 30000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'
@@ -452,6 +474,7 @@ Texample:
     - 'playtime-minutes 86400'
     - 'block-break EMERALD_ORE 1300'
     - 'mob-kills wither 60'
+    - 'quests 430'
   commands:
     - 'eco give %player_name% 50000'
     - 'lp user %player_name% parent remove %rankup_current_rank%'

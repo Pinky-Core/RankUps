@@ -107,7 +107,9 @@ public class ConfigManager {
                 java.util.Map<String, java.util.Map<String, Integer>> requirements = new java.util.HashMap<>();
                 java.util.Map<String, Integer> mobKills = new java.util.HashMap<>();
                 java.util.Map<String, Integer> blockBreaks = new java.util.HashMap<>();
+                java.util.Map<String, Integer> quests = new java.util.HashMap<>();
                 int playtime = 0;
+                int totalQuests = 0;
                 for (String r : reqs) {
                     if (r == null) continue;
                     String[] parts = r.trim().split("\\s+");
@@ -125,10 +127,17 @@ public class ConfigManager {
                         String mob = parts[1].toUpperCase();
                         int amt = 0; try { amt = Integer.parseInt(parts[2]); } catch (NumberFormatException ignored) {}
                         if (amt > 0) mobKills.put(mob, amt);
+                    } else if (type.startsWith("quests") && parts.length >= 2) {
+                        int amt = 0; try { amt = Integer.parseInt(parts[1]); } catch (NumberFormatException ignored) {}
+                        if (amt > 0) totalQuests = amt;
                     }
                 }
                 if (!mobKills.isEmpty()) requirements.put("mob_kills", mobKills);
                 if (!blockBreaks.isEmpty()) requirements.put("block_breaks", blockBreaks);
+                if (totalQuests > 0) {
+                    quests.put("total", totalQuests);
+                    requirements.put("quests", quests);
+                }
                 if (playtime > 0) {
                     java.util.Map<String, Integer> play = new java.util.HashMap<>();
                     play.put("total", playtime);
@@ -213,6 +222,16 @@ public class ConfigManager {
                             Map<String, Integer> playtimeMap = new HashMap<>();
                             playtimeMap.put("total", playtime);
                             requirements.put("playtime_minutes", playtimeMap);
+                        }
+                        
+                        // Quests
+                        ConfigurationSection questsSection = requirementsSection.getConfigurationSection("quests");
+                        if (questsSection != null) {
+                            Map<String, Integer> quests = new HashMap<>();
+                            for (String quest : questsSection.getKeys(false)) {
+                                quests.put(quest, questsSection.getInt(quest));
+                            }
+                            requirements.put("quests", quests);
                         }
                         
                         rank.setRequirements(requirements);

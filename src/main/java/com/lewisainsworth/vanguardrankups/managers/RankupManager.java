@@ -245,6 +245,15 @@ public class RankupManager {
             }
         }
         
+        // Check quests completion
+        int requiredQuests = rank.getRequiredQuests();
+        if (requiredQuests > 0) {
+            int currentQuests = playerData.getTotalCompletedQuests();
+            if (currentQuests < requiredQuests) {
+                return false;
+            }
+        }
+        
         return true;
     }
     
@@ -306,6 +315,16 @@ public class RankupManager {
         boolean resetPlaytime = getRankupsYmlConfig().getBoolean("settings.reset_statistics.playtime", false);
         boolean resetFishing = getRankupsYmlConfig().getBoolean("settings.reset_statistics.fishing", true);
         boolean resetFarming = getRankupsYmlConfig().getBoolean("settings.reset_statistics.farming", true);
+        boolean resetQuests = getRankupsYmlConfig().getBoolean("settings.reset_statistics.quests", false);
+        
+        // Debug logging
+        plugin.getLogger().info("Reset configuration for " + playerData.getPlayerName() + ":");
+        plugin.getLogger().info("  - Mob kills: " + resetMobKills);
+        plugin.getLogger().info("  - Block breaks: " + resetBlockBreaks);
+        plugin.getLogger().info("  - Playtime: " + resetPlaytime);
+        plugin.getLogger().info("  - Fishing: " + resetFishing);
+        plugin.getLogger().info("  - Farming: " + resetFarming);
+        plugin.getLogger().info("  - Quests: " + resetQuests);
         
         // Reset mob kills if configured
         if (resetMobKills) {
@@ -335,6 +354,14 @@ public class RankupManager {
         if (resetFarming) {
             playerData.resetFarming();
             plugin.getLogger().info("Reset farming for player " + playerData.getPlayerName());
+        }
+        
+        // Reset quests if configured
+        if (resetQuests) {
+            playerData.resetCompletedQuests();
+            plugin.getLogger().info("Reset completed quests for player " + playerData.getPlayerName());
+        } else {
+            plugin.getLogger().info("NOT resetting quests for player " + playerData.getPlayerName() + " (configured to false)");
         }
     }
     
@@ -383,6 +410,12 @@ public class RankupManager {
                 Map<String, Integer> farming = requirements.getOrDefault("farming", new HashMap<>());
                 farming.put(target.toUpperCase(), newValue);
                 requirements.put("farming", farming);
+                break;
+                
+            case "quests":
+                Map<String, Integer> quests = requirements.getOrDefault("quests", new HashMap<>());
+                quests.put("total", newValue); // Always use "total" for general quest requirement
+                requirements.put("quests", quests);
                 break;
                 
             default:

@@ -35,7 +35,8 @@ public class RankupCommand implements CommandExecutor {
         }
         
         if (args.length == 0) {
-            showRankupInfo(player);
+            // Por defecto mostrar solo progreso
+            showProgress(player);
             return true;
         }
         
@@ -77,8 +78,8 @@ public class RankupCommand implements CommandExecutor {
                 break;
                 
             default:
-                // Mostrar información en lugar de hacer rankup automáticamente
-                showRankupInfo(player);
+                // Mostrar progreso por defecto
+                showProgress(player);
                 break;
         }
         
@@ -98,28 +99,26 @@ public class RankupCommand implements CommandExecutor {
         player.sendMessage("§8§m" + "─".repeat(10));
         
         if (currentRankData != null) {
-            player.sendMessage("§7Rango actual: " + currentRankData.getDisplayName());
+            player.sendMessage("§7Rango actual: §f" + currentRankData.getDisplayName());
         } else {
-            player.sendMessage("§7Rango actual: §cX");
+            player.sendMessage("§7Rango actual: §cSin rango");
         }
         
         if (nextRankData != null) {
-            player.sendMessage("§7Siguiente rango: " + nextRankData.getDisplayName());
+            player.sendMessage("§7Siguiente rango: §f" + nextRankData.getDisplayName());
             
             boolean canRankup = plugin.getRankupManager().canRankup(playerData);
             if (canRankup) {
-                player.sendMessage("§a§l✓ Puedes hacer rankup!");
+                player.sendMessage("§a§l✅ ¡Puedes hacer rankup! Usa /rankup confirm");
             } else {
-                player.sendMessage("§c§l✗ No cumples los requisitos");
+                player.sendMessage("§c§l❌ No cumples los requisitos para el siguiente rango");
+                player.sendMessage("§7Usa §f/rankup §7para ver tu progreso detallado");
             }
-            
-            // Mostrar progreso detallado
-            showProgress(player);
         } else {
-            player.sendMessage("§7Siguiente rango: §cRango máximo alcanzado");
+            player.sendMessage("§7Siguiente rango: §c§l🎉 ¡Rango máximo alcanzado!");
         }
         
-        player.sendMessage("§8§m" + "─".repeat(20));
+        player.sendMessage("§8§m" + "─".repeat(10));
     }
     
     private void showProgress(Player player) {
@@ -254,6 +253,23 @@ public class RankupCommand implements CommandExecutor {
             MessageUtils.sendMessageNoPrefix(player, "");
         }
         
+        // Mostrar progreso de misiones completadas
+        int requiredQuests = nextRankData.getRequiredQuests();
+        if (requiredQuests > 0) {
+            int currentQuests = playerData.getTotalCompletedQuests();
+            
+            String progressMessage = plugin.getConfigManager().getMessage("progress_quests")
+                .replace("%current%", String.valueOf(currentQuests))
+                .replace("%required%", String.valueOf(requiredQuests));
+            
+            String progressBar = createCustomProgressBar(currentQuests, requiredQuests);
+            
+            MessageUtils.sendMessageNoPrefix(player, sectionColor + "📋 Misiones Completadas:");
+            MessageUtils.sendMessageNoPrefix(player, "§7  " + progressMessage);
+            MessageUtils.sendMessageNoPrefix(player, "§7  " + progressBar);
+            MessageUtils.sendMessageNoPrefix(player, "");
+        }
+        
         // Mostrar estado de rankup
         if (plugin.getRankupManager().canRankup(playerData)) {
             MessageUtils.sendMessageNoPrefix(player, "§a§l✅ ¡Puedes hacer rankup! Usa /rankup confirm");
@@ -270,55 +286,61 @@ public class RankupCommand implements CommandExecutor {
         // Obtener configuración personalizable de las barras de progreso
         int barLength = 20;
         String filledChar = "█";
-        String emptyChar = "█";
+        String emptyChar = "░";
         boolean showPercentage = true;
+        boolean showNumbers = true;
         
         if (plugin.getConfigManager().getGUIConfig() != null) {
             barLength = plugin.getConfigManager().getGUIConfig().getInt("progress_bar.length", 20);
             filledChar = plugin.getConfigManager().getGUIConfig().getString("progress_bar.filled", "&a█");
-            emptyChar = plugin.getConfigManager().getGUIConfig().getString("progress_bar.empty", "&7█");
+            emptyChar = plugin.getConfigManager().getGUIConfig().getString("progress_bar.empty", "&7░");
             showPercentage = plugin.getConfigManager().getGUIConfig().getBoolean("progress_bar.show_percentage", true);
+            showNumbers = plugin.getConfigManager().getGUIConfig().getBoolean("progress_bar.show_numbers", true);
         }
         
-        double percentage = Math.min(1.0, (double) current / required);
-        int filledLength = (int) (percentage * barLength);
-        int emptyLength = barLength - filledLength;
+        // Calcular progreso
+        double progress = Math.min(1.0, (double) current / required);
+        int filledLength = (int) Math.round(progress * barLength);
         
+        // Crear la barra
         StringBuilder bar = new StringBuilder();
-        bar.append("§8[");
         
-        // Parte completada
-        bar.append(filledChar.replace("&", "§"));
-        for (int i = 0; i < filledLength - 1; i++) {
-            bar.append(filledChar.replace("&", "§").substring(2));
+        // Caracteres llenos
+        for (int i = 0; i < filledLength; i++) {
+            bar.append(filledChar);
         }
         
-        // Parte vacía
-        bar.append(emptyChar.replace("&", "§"));
-        for (int i = 0; i < emptyLength - 1; i++) {
-            bar.append(emptyChar.replace("&", "§").substring(2));
+        // Caracteres vacíos
+        for (int i = filledLength; i < barLength; i++) {
+            bar.append(emptyChar);
         }
         
-        bar.append("§8]");
-        
-        // Agregar porcentaje si está habilitado
-        if (showPercentage) {
-            bar.append(" §f").append(String.format("%.1f%%", percentage * 100));
+        // Agregar información adicional
+        if (showNumbers || showPercentage) {
+            bar.append(" §7");
+            if (showNumbers) {
+                bar.append(current).append("/").append(required);
+            }
+            if (showNumbers && showPercentage) {
+                bar.append(" ");
+            }
+            if (showPercentage) {
+                bar.append("(").append((int)(progress * 100)).append("%)");
+            }
         }
         
         return bar.toString();
     }
     
     private void showHelp(Player player) {
-        player.sendMessage("§8§m" + "─".repeat(20));
-        player.sendMessage("§b§lVanguardRankUps §8- §fComandos Disponibles");
-        player.sendMessage("§8§m" + "─".repeat(20));
-        player.sendMessage("§7/rankup §8- §fMostrar información del rango");
-        player.sendMessage("§7/rankup info §8- §fMostrar información detallada");
-        player.sendMessage("§7/rankup progress §8- §fMostrar progreso detallado con barras");
+        player.sendMessage("§8§m" + "─".repeat(15));
+        player.sendMessage("§b§lVanguardRankUps §8- §fComandos");
+        player.sendMessage("§8§m" + "─".repeat(15));
+        player.sendMessage("§7/rankup §8- §fVer tu progreso detallado");
+        player.sendMessage("§7/rankup info §8- §fVer información básica del rango");
         player.sendMessage("§7/rankup confirm §8- §fConfirmar rankup");
         player.sendMessage("§7/rankup help §8- §fMostrar esta ayuda");
-        player.sendMessage("§8§m" + "─".repeat(20));
+        player.sendMessage("§8§m" + "─".repeat(15));
     }
     
     private void performRankup(Player player) {

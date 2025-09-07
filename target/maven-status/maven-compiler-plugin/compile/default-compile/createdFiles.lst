@@ -7,6 +7,7 @@ com\lewisainsworth\vanguardrankups\managers\TaskManager$1.class
 com\lewisainsworth\vanguardrankups\managers\ConfigManager.class
 com\lewisainsworth\vanguardrankups\managers\TaskManager$2.class
 com\lewisainsworth\vanguardrankups\commands\RankupTabCompleter.class
+com\lewisainsworth\vanguardrankups\listeners\QuestListener.class
 com\lewisainsworth\vanguardrankups\utils\MessageUtils.class
 com\lewisainsworth\vanguardrankups\managers\DatabaseManager.class
 com\lewisainsworth\vanguardrankups\commands\RankupAdminCommand.class

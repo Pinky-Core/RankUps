@@ -3,6 +3,7 @@ package com.lewisainsworth.vanguardrankups;
 import com.lewisainsworth.vanguardrankups.commands.RankupCommand;
 import com.lewisainsworth.vanguardrankups.commands.RankupAdminCommand;
 import com.lewisainsworth.vanguardrankups.listeners.PlayerListener;
+import com.lewisainsworth.vanguardrankups.listeners.QuestListener;
 import com.lewisainsworth.vanguardrankups.managers.ConfigManager;
 import com.lewisainsworth.vanguardrankups.managers.DatabaseManager;
 import com.lewisainsworth.vanguardrankups.managers.RankupManager;
@@ -47,6 +48,7 @@ public class VanguardRankUps extends JavaPlugin {
         
         // Register listeners
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        getServer().getPluginManager().registerEvents(new QuestListener(this), this);
         
         // Start task scheduler
         taskManager.startScheduler();
