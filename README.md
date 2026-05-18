@@ -1,6 +1,6 @@
-# VanguardRankUps
+# PinkyRankUps
 
-Un plugin completo y configurable de rankups para servidores de Minecraft, desarrollado por Lewis Ainsworth.
+Un plugin completo y configurable de rankups para servidores de Minecraft, desarrollado por PinkyCore.
 
 ## 🚀 Características
 
@@ -59,7 +59,7 @@ Un plugin completo y configurable de rankups para servidores de Minecraft, desar
 1. **Descargar el plugin**
    ```bash
    # Clonar el repositorio
-   git clone https://github.com/lewisainsworth/VanguardRankUps.git
+   git clone https://github.com/Pinky-Core/PinkyRankUps.git
    cd VanguardRankUps
    
    # Compilar con Maven
@@ -67,11 +67,11 @@ Un plugin completo y configurable de rankups para servidores de Minecraft, desar
    ```
 
 2. **Instalar en el servidor**
-   - Copiar `target/VanguardRankUps-1.0.0.jar` a la carpeta `plugins/`
+   - Copiar `target/PinkyRankUps` a la carpeta `plugins/`
    - Reiniciar el servidor
 
 3. **Configurar el plugin**
-   - Editar `plugins/VanguardRankUps/config.yml`
+   - Editar `plugins/PinkyRankUps/config.yml`
    - Personalizar rangos, requisitos y recompensas
 
 ## ⚙️ Configuración
@@ -367,7 +367,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 ## 👨‍💻 Autor
 
 **Lewis Ainsworth**
-- GitHub: [@lewisainsworth](https://github.com/lewisainsworth)
+- GitHub: [@Pinky-Core](https://github.com/Pinky-Core)
 
 ## 🙏 Agradecimientos
 
